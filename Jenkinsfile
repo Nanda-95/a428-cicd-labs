@@ -1,29 +1,38 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:14'  // Ganti dengan gambar Docker yang sesuai dengan kebutuhan aplikasi React Anda
-        }
-    }
-
+    agent any
+    
     stages {
-        stage('Checkout') {
+        stage('Debug') {
             steps {
-                checkout scm
+                script {
+                    sh 'echo $PATH'
+                    sh 'which docker'
+                    sh 'docker --version'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm install'
+                script {
+                    // Pull Docker image
+                    docker.image('node:14').pull()
+
+                    // Debugging
+                    sh 'docker images'
+
+                    // Run Docker container
+                    def container = docker.image('node:14').run('-v $PWD:/app', 'npm install')
+
+                    // Debugging
+                    sh "docker ps -a"
+                    
+                    // Log container output
+                    container.withRun { c ->
+                        sh "docker logs ${c.id}"
+                    }
+                }
             }
         }
-
-        stage('Test') {
-            steps {
-                sh 'npm test'
-            }
-        }
-
-        // Tambahkan stage deploy jika diperlukan
     }
 }
