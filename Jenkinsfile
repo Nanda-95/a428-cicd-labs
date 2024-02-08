@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS"
+        nodejs "Nama_NodeJS_Installation" // Ganti dengan nama instalasi NodeJS yang ada di Jenkins
     }
 
     stages {
@@ -15,11 +15,29 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    npm 'install'
+                    // Tambahkan langkah-langkah untuk build aplikasi Node.js di sini
+                    sh 'npm install'
+                    // ... tambahkan perintah-perintah lain yang diperlukan
                 }
             }
         }
 
-        // Tambahkan tahapan lain jika diperlukan
+        stage('Test') {
+            steps {
+                script {
+                    // Tambahkan langkah-langkah untuk test aplikasi Node.js di sini
+                    sh 'npm test'
+                    // ... tambahkan perintah-perintah lain yang diperlukan
+                }
+            }
+        }
+
+        // stage('Deploy') {
+        //     steps {
+        //         script {
+        //             // Tambahkan langkah-langkah untuk deployment aplikasi Node.js di sini
+        //         }
+        //     }
+        // }
     }
 }
