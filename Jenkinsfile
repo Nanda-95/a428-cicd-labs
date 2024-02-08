@@ -1,17 +1,25 @@
-node {
-    stage('Checkout') {
-        checkout scm
+pipeline {
+    agent any
+
+    tools {
+        nodejs "NodeJS"
     }
 
-    stage('Build') {
-        sh 'npm install'
-    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-    stage('Test') {
-        sh 'npm test'
-    }
+        stage('Build') {
+            steps {
+                script {
+                    npm 'install'
+                }
+            }
+        }
 
-    stage('Deploy') {
-    
+        // Tambahkan tahapan lain jika diperlukan
     }
 }
