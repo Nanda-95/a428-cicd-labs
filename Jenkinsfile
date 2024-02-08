@@ -1,22 +1,30 @@
-node {
-    stage('Setup Environment') {
-        // Instal Node.js dan npm jika belum terinstal
-        sh 'apt-get update && apt-get install -y nodejs npm'
-
-        // Tambahkan npm ke PATH
-        script {
-            def npmBin = sh(script: 'which npm', returnStdout: true).trim()
-            env.PATH = "${npmBin}:${env.PATH}"
+pipeline {
+    agent {
+        docker {
+            image 'node:lts-buster-slim'
+            args '-p 3000:3000'
         }
     }
-
-    stage('Checkout') {
-        checkout scm
+    environment {
+        CI = 'true'
     }
-
-    stage('Build') {
-        sh 'npm install'
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './jenkins/scripts/test.sh'
+            }
+        }
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+                input message: 'Finished using the website? (Click "Proceed" to continue)'
+                sh './jenkins/scripts/kill.sh'
+            }
+        }
     }
-
-    // Sisanya dari Jenkinsfile
 }
